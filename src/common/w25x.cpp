@@ -101,8 +101,8 @@ private:
 };
 
 constexpr uint16_t PAGE_SIZE = 256;
-
-constexpr uint8_t MFRID = 0xEF;
+/**change mfrid from 0xEF to 0x68 */
+constexpr uint8_t MFRID = 0x68;
 constexpr uint8_t DEVID = 0x13;
 constexpr uint8_t DEVID_NEW = 0x16;
 

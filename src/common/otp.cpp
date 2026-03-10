@@ -298,9 +298,21 @@ bool otp_parse_timestamp(uint32_t *timestamp, const uint8_t *memory, size_t len)
 const STM32_UUID *otp_get_STM32_UUID() {
     return (const STM32_UUID *)OTP_STM32_UUID_ADDR;
 }
+uint8_t otp_get_serial_nr(serial_nr_t &sn)
+{
+    uint8_t len = otp_parse_serial_nr(sn, (uint8_t *)OTP_START_ADDR, OTP_SIZE);
 
-uint8_t otp_get_serial_nr(serial_nr_t &sn) {
-    return otp_parse_serial_nr(sn, (uint8_t *)OTP_START_ADDR, OTP_SIZE);
+    // If OTP parsing failed (broken lug / blank OTP), inject dummy serial
+    if (len == 0) {
+        static constexpr char dummy_serial[] = "CZPXMINI00000001";
+
+        std::memset(sn.begin(), 0, sn.size());
+        std::memcpy(sn.begin(), dummy_serial, sizeof(dummy_serial));
+
+        return sizeof(dummy_serial);
+    }
+
+    return len;
 }
 
 uint8_t otp_parse_serial_nr(serial_nr_t &sn, const uint8_t *memory, size_t len) {
